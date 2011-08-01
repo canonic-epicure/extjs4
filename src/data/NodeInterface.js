@@ -303,7 +303,24 @@ Ext.define('Ext.data.NodeInterface', {
                     for (i = 0; i < len; i++) {
                         children[i].updateInfo(silent);
                     }
+                    
+                    // update the `index` property of the siblings
+                    var currentNode     = me;
+                    var nextSibling     = currentNode.nextSibling;
+                    
+                    while (nextSibling && nextSibling.get('index') !== currentNode.get('index') + 1) {
+                         
+                        nextSibling.set('index', currentNode.get('index') + 1);
+                        
+                        if (silent) {
+                            nextSibling.commit();
+                        }
+                        
+                        currentNode     = nextSibling;
+                        nextSibling     = currentNode.nextSibling;
+                    }
                 },
+                
 
                 /**
                  * Returns true if this node is the last child of its parent
