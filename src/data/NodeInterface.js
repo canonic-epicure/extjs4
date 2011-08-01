@@ -310,7 +310,9 @@ Ext.define('Ext.data.NodeInterface', {
                     
                     while (nextSibling && nextSibling.get('index') !== currentNode.get('index') + 1) {
                          
+                        nextSibling.beginEdit();
                         nextSibling.set('index', currentNode.get('index') + 1);
+                        nextSibling.endEdit(silent);
                         
                         if (silent) {
                             nextSibling.commit();
