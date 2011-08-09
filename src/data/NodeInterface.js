@@ -887,6 +887,10 @@ Ext.define('Ext.data.NodeInterface', {
                             n = cs[i];
                             n.previousSibling = cs[i-1];
                             n.nextSibling = cs[i+1];
+                        }
+                        
+                        for (i = 0; i < ln; i++) {
+                            n = cs[i];
                         
                             if (i === 0) {
                                 this.setFirstChild(n);
