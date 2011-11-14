@@ -280,44 +280,46 @@ Ext.define('Ext.data.NodeInterface', {
                         parent = me,
                         children = me.childNodes,
                         len = children.length,
-                        i = 0;
-
+                        i = 0,
+                        data = me[me.persistenceProperty];
+    
                     while (parent.parentNode) {
                         ++depth;
                         parent = parent.parentNode;
                     }                                            
-                    
-                    me.beginEdit();
-                    me.set({
+                
+                    var change = {
                         isFirst: isFirst,
                         isLast: isLast,
                         depth: depth,
                         index: parentNode ? parentNode.indexOf(me) : 0,
                         parentId: parentNode ? parentNode.getId() : null
-                    });
-                    me.endEdit(silent);
-                    if (silent) {
-                        me.commit();
-                    }
+                    };
                     
+                    if (silent) {
+                        Ext.apply(data, change);
+                    } else {
+                        me.beginEdit();
+                        me.set(change);
+                        me.endEdit();
+                    }
+                
                     for (i = 0; i < len; i++) {
                         children[i].updateInfo(silent);
                     }
-                    
-                    // update the `index` property of the siblings
+                
+                    // update the `index` property of the siblings in the imperative style for performance reasons
                     var currentNode     = me;
                     var nextSibling     = currentNode.nextSibling;
-                    
+                
                     while (nextSibling && nextSibling.get('index') !== currentNode.get('index') + 1) {
-                         
-                        nextSibling.beginEdit();
-                        nextSibling.set('index', currentNode.get('index') + 1);
-                        nextSibling.endEdit(silent);
-                        
+                     
                         if (silent) {
-                            nextSibling.commit();
+                            nextSibling[ nextSibling.persistenceProperty ].index = currentNode.get('index') + 1;
+                        } else {
+                            nextSibling.set("index", currentNode.get('index') + 1);
                         }
-                        
+                    
                         currentNode     = nextSibling;
                         nextSibling     = currentNode.nextSibling;
                     }
